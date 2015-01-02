@@ -22,7 +22,7 @@ angular.module('ngCart.directives', [])
                 data:'='
             },
             transclude: true,
-            templateUrl: 'template/ngCart/addtocart.html',
+            templateUrl: 'bower_components/ngCart/template/ngCart/addtocart.html',
             link:function(scope, element, attrs){
                 scope.attrs = attrs;
                 scope.inCart = function(){
@@ -37,7 +37,7 @@ angular.module('ngCart.directives', [])
             restrict : 'E',
             controller : 'CartController',
             scope: {},
-            templateUrl: 'template/ngCart/cart.html',
+            templateUrl: 'bower_components/ngCart/template/ngCart/cart.html',
             link:function(scope, element, attrs){
 
             }
@@ -50,7 +50,7 @@ angular.module('ngCart.directives', [])
             controller : 'CartController',
             scope: {},
             transclude: true,
-            templateUrl: 'template/ngCart/summary.html'
+            templateUrl: 'bower_components/ngCart/template/ngCart/summary.html'
         };
     }]);
 
