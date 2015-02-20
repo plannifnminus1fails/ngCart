@@ -18,12 +18,21 @@ angular.module('ngCart', ['ngCart.directives'])
             ngCart.$save();
         });
 
-        if (angular.isObject(store.get('cart'))) {
-            ngCart.$restore(store.get('cart'));
+        // if (angular.isObject(store.get('cart'))) {
+        //     ngCart.$restore(store.get('cart'));
 
-        } else {
-            ngCart.init();
-        }
+        // } else {
+        //     ngCart.init();
+        // }
+
+        store.get('cart',function(cart){
+            if (angular.isObject(cart)) {
+                ngCart.$restore(cart);
+
+            } else {
+                ngCart.init();
+            }
+        });
 
     }])
 
@@ -167,7 +176,6 @@ angular.module('ngCart', ['ngCart.directives'])
             _self.init();
             _self.$cart.shipping = storedCart.shipping;
             _self.$cart.tax = storedCart.tax;
-
             angular.forEach(storedCart.items, function (item) {
                 _self.$cart.items.push(new ngCartItem(item._id,  item._name, item._price, item._quantity, item._data));
             });
@@ -175,7 +183,9 @@ angular.module('ngCart', ['ngCart.directives'])
         };
 
         this.$save = function () {
-            return store.set('cart', JSON.stringify(this.getCart()));
+            // return store.set('cart', JSON.stringify(this.getCart()));
+            console.log(this.getCart());
+            return store.set('cart', this.getCart());
         }
 
     }])
@@ -282,28 +292,98 @@ angular.module('ngCart', ['ngCart.directives'])
 
     }])
 
-    .service('store', ['$window', function ($window) {
+    .service('store', ['$window', 'Global', '$http', function ($window, Global, $http) {
 
         return {
 
-            get: function (key) {
-                if ($window.localStorage [key]) {
-                    var cart = angular.fromJson($window.localStorage [key]);
-                    return JSON.parse(cart);
+            // get: function (key) {
+                // if ($window.localStorage [key]) {
+                //     var cart = angular.fromJson($window.localStorage [key]);
+                //     return JSON.parse(cart);
+                // }
+            //     return false;
+
+            // },
+
+            // get: function (key, callback) {
+            //     var response;
+            //     if ($window.localStorage [key]) {
+            //         var cart = angular.fromJson($window.localStorage [key]);
+            //         response = JSON.parse(cart);
+            //     }
+            //     if(typeof callback == "function"){
+            //         callback(response);
+            //     } else {
+            //         return response;
+            //     }
+            //     return false;
+
+            // },
+
+            get: function (key, callback) {
+                var response;
+                if (Global.user._id) {
+
+                    $http.get('carts/' + Global.user._id)
+                    .success(function(response) {
+                        if(typeof callback == "function"){
+                            callback(response);
+                        } else {
+                            return response;
+                        }
+
+                    }).error(function(){
+                        if(typeof callback == "function"){
+                            callback(response);
+                        }
+
+                        return false;
+                    });
+                } else {
+                        if(typeof callback == "function"){
+                            callback(response);
+                        }
+
+                        return false;
                 }
-                return false;
+
+
 
             },
-
-
             set: function (key, val) {
 
+                // if (val === undefined) {
+                //     $window.localStorage .removeItem(key);
+                // } else {
+                //     $window.localStorage [key] = angular.toJson(val);
+                // }
+                // return $window.localStorage [key];
+
                 if (val === undefined) {
-                    $window.localStorage .removeItem(key);
+                    return false;
                 } else {
-                    $window.localStorage [key] = angular.toJson(val);
+
+
+                if (Global.user._id) {
+                    $http.get('carts/' + Global.user._id)
+                    .success(function(response) {
+                        $http.put('carts/' + Global.user._id, val)
+                        .success(function(response) {
+                                return response;
+                        });
+                    }).error(function(){
+                        $http.post('carts', val)
+                        .success(function(response) {
+                                return response;
+                        });
+                    });
+
+
+
                 }
-                return $window.localStorage [key];
+
+                }
+                return false;
             }
         }
     }])
