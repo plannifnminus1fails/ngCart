@@ -92,7 +92,7 @@ angular.module('ngCart', ['ngCart.directives'])
 
     }])
 
-    .service('ngCart', ['$rootScope', 'ngCartItem', 'store', function ($rootScope, ngCartItem, store) {
+    .service('ngCart', ['$rootScope', 'ngCartItem', 'store', 'Global', '$http', function ($rootScope, ngCartItem, store, Global, $http) {
 
         this.init = function(){
             this.$cart = {
@@ -204,7 +204,16 @@ angular.module('ngCart', ['ngCart.directives'])
 
         this.empty = function () {
             this.$cart.items = [];
-            localStorage.removeItem('cart');
+            //localStorage.removeItem('cart');
+                if (Global.user._id) {
+                    $http.get('carts/' + Global.user._id)
+                    .success(function(response) {
+                        $http.delete('carts/' + Global.user._id)
+                        .success(function(response) {
+                                return response;
+                        });
+                    });
+                }
         };
 
         this.toObject = function() {
