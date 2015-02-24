@@ -28,7 +28,6 @@ angular.module('ngCart', ['ngCart.directives'])
         store.get('cart',function(cart){
             if (angular.isObject(cart)) {
                 ngCart.$restore(cart);
-
             } else {
                 ngCart.init();
             }
@@ -60,7 +59,7 @@ angular.module('ngCart', ['ngCart.directives'])
                 $rootScope.$broadcast('ngCart:itemAdded', newItem);
             }
 
-            $rootScope.$broadcast('ngCart:change', {});
+            // $rootScope.$broadcast('ngCart:change', {});
         };
 
         this.getItemById = function (itemId) {
@@ -188,12 +187,11 @@ angular.module('ngCart', ['ngCart.directives'])
             angular.forEach(storedCart.items, function (item) {
                 _self.$cart.items.push(new ngCartItem(item._id,  item._name, item._price, item._quantity, item._data));
             });
-            this.$save();
+            //this.$save();
         };
 
         this.$save = function () {
             // return store.set('cart', JSON.stringify(this.getCart()));
-            console.log(this.getCart());
             return store.set('cart', this.getCart());
         }
 
